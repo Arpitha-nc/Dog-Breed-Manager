@@ -26,13 +26,9 @@ const getDog = async (req, res) => {
 const addDog = async (req, res) => {
   try {
     const { breed, types } = req.body;
-
     if (!breed) return res.status(400).send("Breed name is required");
-
     const dogDoc = await Dog.findOne();
-
     if (!dogDoc) return res.status(404).send("No dog data document found");
-
     dogDoc.set(breed, types || []);
     await dogDoc.save();
 
@@ -45,11 +41,12 @@ const addDog = async (req, res) => {
 const updateDog = async (req, res) => {
   try {
     const { id } = req.params;
-    const dogDoc = await Dog.findOne();
-    if (!dogDoc) return res.status(404).send("Dog data not found");
-    dogDoc[id] = req.body.types || [];
-    await dogDoc.save();
-    res.status(200).send({ [id]: dogDoc[id] });
+    const { types } = req.body;
+    const result = await Dog.updateOne({}, { $set: { [id]: types } });
+    if (result.modifiedCount === 0) {
+      return res.status(404).send("Update failed or no change detected");
+    }
+    res.status(200).send({ [id]: types });
   } catch (err) {
     res.status(400).send({ error: err.message });
   }
