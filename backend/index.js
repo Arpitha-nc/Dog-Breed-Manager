@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const dogRoute = require("./routes/dog.route");
 const data = require("./data/dogs.json");
 const Dog = require("./models/dogs.model");
+const setupSwagger = require("./swagger");
 
 dotenv.config();
 
@@ -19,20 +20,29 @@ app.get("/", (req, res) => {
 
 app.use("/dogs", dogRoute);
 
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(async () => {
-    console.log("DB connected");
+setupSwagger(app);
 
-    const existing = await Dog.findOne();
-    if (!existing) {
-      await Dog.create(data);
-      console.log("Initial dog data loaded");
-    }
+if (process.env.NODE_ENV !== "test") {
+  mongoose
+    .connect(process.env.MONGODB_URI)
+    .then(async () => {
+      console.log("DB connected");
 
-    const port = process.env.PORT || 3000;
-    app.listen(port, () => {
-      console.log(`Server listening on port ${port}`);
-    });
-  })
-  .catch((err) => console.log(err));
+      const existing = await Dog.findOne();
+      if (!existing) {
+        await Dog.create(data);
+        console.log("Initial dog data loaded");
+      }
+
+      const port = process.env.PORT || 3000;
+      app.listen(port, () => {
+        console.log(`Server listening on port ${port}`);
+      });
+    })
+    .catch((err) => console.log(err));
+} else {
+  console.log(
+    "Running in test environment. Skipping direct database connection in index.js."
+  );
+}
+module.exports = app;
