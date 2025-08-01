@@ -16,10 +16,26 @@ const Dog = require("../models/dogs.model");
 
 const getDogs = async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 9;
+    const skip = (page - 1) * limit;
     const dogDoc = await Dog.findOne();
     if (!dogDoc) return res.status(404).send("No data found");
-    const { ...breeds } = dogDoc.toObject();
-    res.status(200).send(breeds);
+
+    const fullData = dogDoc.toObject();
+    const allBreeds = Object.entries(fullData).filter(
+      ([key]) => !["_id", "createdAt", "updatedAt", "__v"].includes(key)
+    );
+    const total = allBreeds.length;
+    const paginated = allBreeds.slice(skip, skip + limit);
+    const paginatedObject = Object.fromEntries(paginated);
+
+    res.status(200).send({
+      data: paginatedObject,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    });
   } catch (err) {
     res.status(400).send(err);
   }
