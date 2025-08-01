@@ -11,8 +11,6 @@ const BreedModal = ({
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     await onSubmit();
-    const modal = document.getElementById(id);
-    if (modal) modal.close();
   };
 
   return (
@@ -20,7 +18,7 @@ const BreedModal = ({
       <div className="modal-box">
         <h3 className="font-bold text-lg">{title}</h3>
 
-        <label className="label">
+        <label className="label" htmlFor={`${id}-breed-name`}>
           <span className="label-text">Breed Name</span>
         </label>
         <input
@@ -29,12 +27,14 @@ const BreedModal = ({
           value={breedName}
           onChange={onNameChange}
           disabled={disableNameInput}
+          id={`${id}-breed-name`}
         />
 
-        <label className="label">
+        <label className="label" htmlFor={`${id}-new-type`}>
           <span className="label-text">Add New Type</span>
         </label>
         <input
+          id={`${id}-new-type`}
           type="text"
           className="input input-bordered w-full mb-4"
           value={newType}
@@ -42,8 +42,19 @@ const BreedModal = ({
         />
 
         <div className="modal-action">
-          <button className="btn" onClick={handleFormSubmit}>
+          <button
+            className="btn"
+            onClick={handleFormSubmit}
+            data-testid={`${id}-submit-button`}
+          >
             Save
+          </button>
+          <button
+            onClick={() => document.getElementById(id).close()}
+            className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+            data-testid={`${id}-close-button`}
+          >
+            ✕
           </button>
         </div>
       </div>
