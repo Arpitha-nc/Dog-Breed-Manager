@@ -15,34 +15,50 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
-  res.send("Hello World");
+  res.send("Go to /dogs to get a list of dog breeds");
 });
 
 app.use("/dogs", dogRoute);
 
 setupSwagger(app);
 
-if (process.env.NODE_ENV !== "test") {
-  mongoose
-    .connect(process.env.MONGODB_URI)
-    .then(async () => {
-      console.log("DB connected");
+async function connectToDatabase(uri) {
+  try {
+    await mongoose.connect(uri);
+    console.log("✅ Database connected");
 
-      const existing = await Dog.findOne();
-      if (!existing) {
-        await Dog.create(data);
-        console.log("Initial dog data loaded");
-      }
-
-      const port = process.env.PORT || 3000;
-      app.listen(port, () => {
-        console.log(`Server listening on port ${port}`);
-      });
-    })
-    .catch((err) => console.log(err));
-} else {
-  console.log(
-    "Running in test environment. Skipping direct database connection in index.js."
-  );
+    const existing = await Dog.findOne();
+    if (!existing) {
+      await Dog.create(data);
+      console.log("🌱 Initial dog data loaded");
+    }
+  } catch (err) {
+    console.error("❌ Failed to connect to database:", err);
+    throw err;
+  }
 }
+
+async function startServer() {
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => {
+    console.log(`🚀 Server listening on port ${port}`);
+  });
+}
+
+(async () => {
+  if (process.env.NODE_ENV !== "test") {
+    try {
+      await connectToDatabase(process.env.MONGODB_URI);
+      await startServer();
+    } catch (err) {
+      console.error("💥 Application failed to start.", err);
+      process.exit(1);
+    }
+  } else {
+    console.log(
+      "🧪 Test environment detected. Skipping DB and server startup."
+    );
+  }
+})();
+
 module.exports = app;

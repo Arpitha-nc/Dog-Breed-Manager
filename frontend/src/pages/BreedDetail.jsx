@@ -9,12 +9,6 @@ const BreedDetail = () => {
   const breedTypes = breeds[name] || [];
   const image = images[name];
 
-  if (!breeds[name]) {
-    return (
-      <div className="text-center text-error text-lg">Breed not found</div>
-    );
-  }
-
   return (
     <div className="max-w-3xl mx-auto px-4 py-6">
       <div className="flex justify-start mb-4">
