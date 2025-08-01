@@ -1,12 +1,14 @@
 import { useId, useState } from "react";
 import BreedModal from "./BreedModal";
 import api from "../lib/api";
+import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/solid";
 
-const BreedCard = ({ breed, refreshData }) => {
+const BreedCard = ({ breed, image, refreshData, addToast }) => {
   const editModalId = useId();
 
   const [editedName, setEditedName] = useState(breed.name);
-  const [newType, setNewType] = useState("");
+  const [newType, setNewType] = useState(breed.types.join(", "));
+
   const handleUpdate = async () => {
     const trimmedTypes = newType
       .split(",")
@@ -14,46 +16,63 @@ const BreedCard = ({ breed, refreshData }) => {
       .filter((type) => type.length > 0);
 
     try {
-      const res = await api.put(`/dogs/${breed.name}`, {
+      await api.put(`/dogs/${breed.name}`, {
         types: trimmedTypes,
       });
 
-      if (res.status === 200) {
-        refreshData();
-        setNewType("");
-        const modal = document.getElementById(editModalId);
-        if (modal) modal.close();
-      }
+      refreshData();
+      setNewType("");
+      const modal = document.getElementById(editModalId);
+      if (modal) modal.close();
+      addToast(`Breed "${breed.name}" updated successfully!`, "success");
     } catch (err) {
       console.error("Update failed", err?.response?.data || err.message);
+      addToast(`Failed to update breed "${breed.name}".`, "error");
     }
   };
+
   const handleDelete = async () => {
-    try {
-      await api.delete(`/dogs/${breed.name}`);
-      refreshData();
-    } catch (err) {
-      console.error("Delete failed", err);
+    if (window.confirm(`Are you sure you want to delete ${breed.name}?`)) {
+      try {
+        await api.delete(`/dogs/${breed.name}`);
+        refreshData();
+        addToast(`Breed "${breed.name}" deleted successfully!`, "success");
+      } catch (err) {
+        console.error("Delete failed", err?.response?.data || err.message);
+        addToast(`Failed to delete breed "${breed.name}".`, "error");
+      }
     }
   };
 
   return (
-    <div className="card bg-blue-950 text-white shadow-md">
+    <div className="card bg-black text-white shadow-md relative min-h-full">
       <div className="card-body">
         <h2 className="card-title">{breed.name}</h2>
 
-        <ul className="list bg-black rounded-box shadow-md">
-          {breed.types.map((type, idx) => (
-            <li
-              key={idx}
-              className="p-4 border-t border-blue-300 first:border-none text-white"
-            >
-              {type}
-            </li>
-          ))}
-        </ul>
+        <figure className="aspect-h-1 aspect-w-1">
+          <img
+            src={image}
+            alt={breed.name}
+            className="w-full h-full object-cover"
+          />
+        </figure>
 
-        <div className="pt-4 flex justify-end gap-2">
+        <ul className="list bg-black rounded-box shadow-md my-4">
+          {breed.types.length > 0
+            ? breed.types.map((type, idx) => (
+                <li
+                  key={idx}
+                  className="p-4 border-t border-blue-300 first:border-none text-white"
+                >
+                  {type}
+                </li>
+              ))
+            : ""}
+        </ul>
+      </div>
+
+      <div className="absolute bottom-4 right-4">
+        <div className="flex justify-end gap-2">
           <button
             className="btn btn-outline btn-sm text-white border-white"
             onClick={() => {
@@ -62,6 +81,7 @@ const BreedCard = ({ breed, refreshData }) => {
               document.getElementById(editModalId).showModal();
             }}
           >
+            <PencilSquareIcon className="w-4 h-4" />
             Edit
           </button>
 
@@ -69,6 +89,7 @@ const BreedCard = ({ breed, refreshData }) => {
             className="btn btn-outline btn-sm btn-error"
             onClick={handleDelete}
           >
+            <TrashIcon className="w-4 h-4" />
             Delete
           </button>
         </div>
@@ -79,7 +100,7 @@ const BreedCard = ({ breed, refreshData }) => {
         title={`Edit Breed: ${breed.name}`}
         breedName={editedName}
         newType={newType}
-        onNameChange={(e) => setEditedName(e.target.value)}
+        onNameChange={() => {}}
         onTypeChange={(e) => setNewType(e.target.value)}
         onSubmit={handleUpdate}
         disableNameInput={true}
