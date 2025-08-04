@@ -1,7 +1,7 @@
 const DogAnimations = () => {
   return (
     <>
-      <style jsx>{`
+      <style>{`
         @keyframes float {
           0%,
           100% {

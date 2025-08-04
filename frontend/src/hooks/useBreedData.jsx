@@ -18,28 +18,23 @@ const fetchBreedImages = async (breedList, addToast) => {
 
         const data = await res.json();
 
-        if (data.status === "error") {
-          if (data.message.includes("Breed not found")) {
-            console.warn(
-              `Image not found for breed "${breed}" on Dog CEO API. Using placeholder.`
-            );
-            imgMap[breed] = PLACEHOLDER_IMAGE_URL;
-            failedBreeds.push(breed);
-          } else {
-            console.error(
-              `Dog CEO API error for ${breed}: ${data.message}. Using placeholder.`
-            );
-            imgMap[breed] = PLACEHOLDER_IMAGE_URL;
-            failedBreeds.push(breed);
-          }
+        if (data.status === "error" || !Array.isArray(data.message)) {
+          console.warn(
+            `Error or invalid format for breed "${breed}". Using placeholder.`
+          );
+          imgMap[breed] = PLACEHOLDER_IMAGE_URL;
+          failedBreeds.push(breed);
         } else if (!res.ok) {
           console.error(
             `Failed to fetch image for ${breed}: ${res.statusText}. Using placeholder.`
           );
           imgMap[breed] = PLACEHOLDER_IMAGE_URL;
           failedBreeds.push(breed);
+        } else if (data.message.length > 0) {
+          imgMap[breed] = data.message[0];
         } else {
-          imgMap[breed] = data.message?.[0] || PLACEHOLDER_IMAGE_URL;
+          imgMap[breed] = PLACEHOLDER_IMAGE_URL;
+          failedBreeds.push(breed);
         }
       } catch (err) {
         console.error(

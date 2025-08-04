@@ -32,7 +32,7 @@ const ConfirmationModal = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black/10" />
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-xs" />
         </TransitionChild>
 
         <div className="fixed inset-0 overflow-y-auto">

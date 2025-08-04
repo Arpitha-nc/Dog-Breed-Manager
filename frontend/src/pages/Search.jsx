@@ -108,7 +108,7 @@ const Search = () => {
                 </div>
 
                 <button
-                  className="mt-16 w-full sm:w-auto px-6 py-3 rounded-lg font-bold text-white bg-blue-500 hover:bg-blue-600 transition-colors flex items-center justify-center gap-2 mx-auto"
+                  className="mt-16 w-full sm:w-auto px-6 py-3 rounded-lg font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 mx-auto"
                   onClick={() => navigate("/alldogs")}
                 >
                   View all breeds

@@ -4,16 +4,63 @@ This is a full-stack web application designed to manage a collection of dog bree
 
 ---
 
-## 🚀 Features
+# 🚀 Live Demo
 
-- **View All Breeds**: Display a list of all dog breeds and their types.
-- **Add New Breed**: Create new dog breed entries with their initial types.
-- **Edit Existing Breed**: Update the types associated with an existing dog breed.
-- **Delete Breed**: Remove dog breed entries from the collection.
-- **Responsive UI**: A user-friendly interface built with React and styled using Tailwind CSS + DaisyUI.
-- **RESTful API**: A robust backend API to handle all data operations.
+🚀 Live Demo on Render
+Experience the Dog Breed Manager live! This application is deployed on Render.com, a cloud platform for hosting web applications.
+
+**Frontend Application**:
+Navigate to the live frontend application in your browser:
+https://dog-breed-manager-frontend.onrender.com
+
+**Backend API**:
+The backend API serves data to the frontend and provides endpoints for managing dog breeds. You can explore its documentation via Swagger UI:
+https://dog-breed-manager-backend.onrender.com/
 
 ---
+
+# ✨ Features
+
+- **Browse Dog Breeds**: Explore a comprehensive list of various dog breeds.
+
+- **Search Functionality**: Easily find specific dog breeds using a dynamic search bar with real-time suggestions.
+
+- **Breed Details**: View detailed information for each breed, including available types.
+
+- **Add New Breeds**: Securely add new dog breeds and their types to the database.
+
+- **Update Breed Information**: Modify existing breed types.
+
+- **Delete Breeds**: Remove breeds from the collection.
+
+- **Pagination**: Navigate through large datasets of dog breeds efficiently.
+
+- **Responsive Design**: Enjoy a seamless experience on both desktop and mobile devices.
+
+- **Interactive Animations**: Delightful dog-themed animations enhance the user experience.
+
+- **Centralized Logging**: Robust logging powered by Winston for better error tracking and application monitoring.
+
+# 📸 Screenshots
+
+Here are some glimpses of the Dog Breed Manager in action:
+
+- **Homepage / Search View**
+  ![alt text](images/Search.png)
+
+  ![alt text](images/Search2.png)
+
+- **Breed Details**
+  ![alt text](images/Details.png)
+- **All Breeds Dashboard**
+  ![alt text](images/Dashboard.png)
+- **Add/Edit Breed Modal**
+  ![alt text](images/Edit.png)
+
+- **Confirmation Modal**
+  ![alt text](images/Delete.png)
+- **Add Breed**
+  ![alt text](images/Add.png)
 
 ## 💻 Technologies Used
 
@@ -21,7 +68,8 @@ This is a full-stack web application designed to manage a collection of dog bree
 
 - **React**: JavaScript library for building UIs.
 - **Tailwind CSS**: Utility-first CSS framework for styling.
-- **DaisyUI**: Tailwind CSS plugin that provides pre-built accessible components.
+- **Headless UI**: Completely unstyled, fully accessible UI components for React.
+- **Hero Icons**: A set of free MIT-licensed high-quality SVG icons.
 - **Jest**: JavaScript testing framework.
 - **React Testing Library**: For testing UI components from a user’s perspective.
 - **Mock Service Worker (MSW)**: For mocking API responses in development/testing (unit tests used direct Jest mocks).
@@ -34,6 +82,9 @@ This is a full-stack web application designed to manage a collection of dog bree
 - **Supertest**: HTTP assertions for Express endpoints.
 - **Dotenv**: For managing environment variables.
 - **Data Storage**: Connect backend to a persistent database MongoDB Atlas.
+- **CORS**: Middleware to enable Cross-Origin Resource Sharing.
+- **Swagger-UI-Express**: For serving API documentation (Swagger/OpenAPI).
+- **Winston**: A versatile logging library for Node.js.
 
 ---
 
@@ -119,17 +170,9 @@ npm test
 - Tests UI behavior via Jest + React Testing Library
 - Uses jest.mock() for mocking API
 
-Focus areas:
-
-- Navbar.test.js: Renders nav correctly
-- BreedModal.test.js: Tests modal behavior and inputs
-- BreedCard.test.js: Verifies update/delete operations
-- Dashboard.test.js: High-level integration of components
-
 🚀 Future Enhancements
 
 - Implement user authentication and authorization
-- Add detailed breed info (e.g., origin, temperament, image upload)
-- Add search, filter, and sort features
+- Add detailed breed info (e.g., origin, temperament)
+- Add filter and sort features
 - Improve error messages and UI feedback
-- Add pagination for breed lists
