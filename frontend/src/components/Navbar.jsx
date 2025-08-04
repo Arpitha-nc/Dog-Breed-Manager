@@ -1,12 +1,12 @@
 const Navbar = () => {
   return (
-    <div className="navbar bg-black shadow-sm">
-      <div className="flex-1">
-        <a className="btn btn-ghost text-xl" href="/">
+    <nav className="bg-black shadow-sm p-4">
+      <div className="flex items-center justify-between max-w-6xl mx-auto">
+        <a className="text-white text-2xl font-bold tracking-wide" href="/">
           Dog Breeds Manager
         </a>
       </div>
-    </div>
+    </nav>
   );
 };
 

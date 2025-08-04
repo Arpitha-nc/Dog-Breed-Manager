@@ -1,4 +1,5 @@
 import { useState, createContext, useContext, useCallback } from "react";
+import { XMarkIcon } from "@heroicons/react/24/solid";
 
 const ToastContext = createContext();
 
@@ -35,18 +36,39 @@ export const ToastProvider = ({ children }) => {
     [removeToast]
   );
 
+  const getTypeClasses = (type) => {
+    switch (type) {
+      case "success":
+        return "bg-green-500 text-white";
+      case "error":
+        return "bg-red-500 text-white";
+      case "warning":
+        return "bg-yellow-500 text-gray-900";
+      case "info":
+      default:
+        return "bg-blue-500 text-white";
+    }
+  };
+
   return (
     <ToastContext.Provider value={{ addToast, removeToast }}>
       {children}
-      <div className="toast toast-top toast-end z-50">
+      <div className="fixed top-4 right-4 z-50 flex flex-col space-y-2">
         {toasts.map((toast) => (
-          <div key={toast.id} className={`alert alert-${toast.type}`}>
+          <div
+            key={toast.id}
+            className={`flex items-center justify-between p-4 rounded-lg shadow-lg ${getTypeClasses(
+              toast.type
+            )}`}
+            role="alert"
+          >
             <span>{toast.message}</span>
             <button
               onClick={() => removeToast(toast.id)}
-              className="btn btn-ghost btn-sm"
+              className="ml-4 p-1 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors"
+              aria-label="Close toast"
             >
-              ✕
+              <XMarkIcon className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
         ))}
