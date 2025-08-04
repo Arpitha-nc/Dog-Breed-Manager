@@ -1,5 +1,5 @@
 const Dog = require("../models/dogs.model");
-
+const logger = require("../logger");
 /**
  * @swagger
  * /dogs:
@@ -20,7 +20,10 @@ const getDogs = async (req, res) => {
     const limit = parseInt(req.query.limit) || 9;
     const skip = (page - 1) * limit;
     const dogDoc = await Dog.findOne();
-    if (!dogDoc) return res.status(404).send("No data found");
+    if (!dogDoc) {
+      logger.warn("No dog data found in database during getDogs request.");
+      return res.status(404).send("No data found");
+    }
 
     const fullData = dogDoc.toObject();
     const allBreeds = Object.entries(fullData).filter(
@@ -30,6 +33,10 @@ const getDogs = async (req, res) => {
     const paginated = allBreeds.slice(skip, skip + limit);
     const paginatedObject = Object.fromEntries(paginated);
 
+    logger.info(
+      `Successfully retrieved ${paginated.length} dog breeds for page ${page}`
+    );
+
     res.status(200).send({
       data: paginatedObject,
       total,
@@ -37,7 +44,8 @@ const getDogs = async (req, res) => {
       totalPages: Math.ceil(total / limit),
     });
   } catch (err) {
-    res.status(400).send(err);
+    logger.error(`Error in getDogs: ${err.message}`, { stack: err.stack });
+    res.status(500).send("An internal server error occurred.");
   }
 };
 
@@ -65,11 +73,17 @@ const getDog = async (req, res) => {
   try {
     const { id } = req.params;
     const dogDoc = await Dog.findOne();
-    if (!dogDoc || !(id in dogDoc))
+    if (!dogDoc || !(id in dogDoc)) {
+      logger.warn(`Attempted to get non-existent breed: ${id}`);
       return res.status(404).send("Breed not found");
+    }
+    logger.info(`Successfully retrieved dog breed: ${id}`);
     res.status(200).send({ [id]: dogDoc[id] });
   } catch (err) {
-    res.status(400).send(err);
+    logger.error(`Error in getDog for id ${req.params.id}: ${err.message}`, {
+      stack: err.stack,
+    });
+    res.status(500).send("An internal server error occurred.");
   }
 };
 
@@ -100,10 +114,16 @@ const getDog = async (req, res) => {
 const addDog = async (req, res) => {
   try {
     const { breed, types } = req.body;
-    if (!breed) return res.status(400).send("Breed name is required");
+    if (!breed) {
+      logger.warn("Attempted to add a dog with no breed specified.");
+      return res.status(400).send("Breed name is required");
+    }
 
     const dogDoc = await Dog.findOne();
-    if (!dogDoc) return res.status(404).send("No dog data document found");
+    if (!dogDoc) {
+      logger.error("No dog data document found during addDog operation.");
+      return res.status(404).send("No dog data document found");
+    }
 
     dogDoc.set(breed, types || []);
     dogDoc.markModified(breed);
@@ -111,14 +131,20 @@ const addDog = async (req, res) => {
 
     const updatedDogDoc = await Dog.findOne();
     if (!updatedDogDoc || !(breed in updatedDogDoc.toObject())) {
+      logger.error(`Failed to retrieve added breed '${breed}' after save.`);
       return res
         .status(500)
         .send({ error: "Failed to retrieve added breed after save." });
     }
 
+    logger.info(`Successfully added new dog breed: ${breed}`);
     res.status(201).send({ [breed]: updatedDogDoc[breed] });
   } catch (err) {
-    res.status(500).send({ error: err.message });
+    logger.error(
+      `Error in addDog for breed ${req.body.breed}: ${err.message}`,
+      { stack: err.stack }
+    );
+    res.status(500).send({ error: "An internal server error occurred." });
   }
 };
 
@@ -156,19 +182,21 @@ const updateDog = async (req, res) => {
 
     const dogDoc = await Dog.findOne();
     if (!dogDoc) {
+      logger.error("No dog data document found during updateDog operation.");
       return res.status(404).send("No dog data document found to update");
     }
 
     if (!(id in dogDoc.toObject())) {
+      logger.warn(`Attempted to update non-existent breed: ${id}`);
       return res.status(404).send("Breed not found for update");
     }
 
     const currentTypes = dogDoc[id];
-
     const typesAreEqual =
       JSON.stringify(currentTypes) === JSON.stringify(types);
 
     if (typesAreEqual) {
+      logger.info(`No change detected for breed: ${id}. Update skipped.`);
       return res
         .status(200)
         .send({ [id]: types, message: "No change detected" });
@@ -176,13 +204,15 @@ const updateDog = async (req, res) => {
 
     dogDoc.set(id, types);
     dogDoc.markModified(id);
-
     await dogDoc.save();
 
+    logger.info(`Successfully updated dog breed: ${id}`);
     res.status(200).send({ [id]: types });
   } catch (err) {
-    console.error("Error in updateDog:", err);
-    res.status(400).send({ error: err.message });
+    logger.error(`Error in updateDog for id ${req.params.id}: ${err.message}`, {
+      stack: err.stack,
+    });
+    res.status(500).send({ error: "An internal server error occurred." });
   }
 };
 
@@ -205,16 +235,22 @@ const deleteDog = async (req, res) => {
   try {
     const { id } = req.params;
     const dogDoc = await Dog.findOne();
-    if (!dogDoc || !(id in dogDoc))
+    if (!dogDoc || !(id in dogDoc)) {
+      logger.warn(`Attempted to delete non-existent breed: ${id}`);
       return res.status(404).send("Breed not found");
+    }
 
     dogDoc.set(id, undefined);
     dogDoc.markModified(id);
     await dogDoc.save();
 
+    logger.info(`Successfully deleted dog breed: ${id}`);
     res.status(200).send({ message: `Breed '${id}' deleted` });
   } catch (err) {
-    res.status(400).send({ error: err.message });
+    logger.error(`Error in deleteDog for id ${req.params.id}: ${err.message}`, {
+      stack: err.stack,
+    });
+    res.status(500).send({ error: "An internal server error occurred." });
   }
 };
 
