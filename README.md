@@ -11,10 +11,12 @@ Experience the Dog Breed Manager live! This application is deployed on Render.co
 
 **Frontend Application**:
 Navigate to the live frontend application in your browser:
+
 https://dog-breed-manager-frontend.onrender.com
 
 **Backend API**:
 The backend API serves data to the frontend and provides endpoints for managing dog breeds. You can explore its documentation via Swagger UI:
+
 https://dog-breed-manager-backend.onrender.com/
 
 ---
