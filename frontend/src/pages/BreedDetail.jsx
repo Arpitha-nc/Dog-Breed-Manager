@@ -12,12 +12,15 @@ const BreedDetail = () => {
   return (
     <div className="max-w-3xl mx-auto px-4 py-6">
       <div className="flex justify-start mb-4">
-        <button onClick={() => navigate(-1)} className="btn btn-primary btn-md">
+        <button
+          onClick={() => navigate(-1)}
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors"
+        >
           ← Back
         </button>
       </div>
 
-      <div className="card bg-black shadow-xl">
+      <div className="bg-black text-white rounded-xl shadow-lg overflow-hidden">
         <figure className="p-4">
           <img
             src={image}
@@ -25,8 +28,8 @@ const BreedDetail = () => {
             className="rounded-xl object-cover w-full max-h-96"
           />
         </figure>
-        <div className="card-body">
-          <h1 className="card-title capitalize text-3xl">{name}</h1>
+        <div className="p-6">
+          <h1 className="capitalize text-3xl font-bold">{name}</h1>
 
           <h2 className="text-xl font-semibold mt-4 mb-2">Types:</h2>
           {breedTypes.length > 0 ? (
